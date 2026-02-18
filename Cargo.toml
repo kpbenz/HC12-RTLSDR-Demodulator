@@ -1,0 +1,15 @@
+[package]
+name = "HC12-RTLSDR-Demodulator"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5.58", features = ["derive"] }
+anyhow = "1.0.101"
+crossbeam-channel = "0.5.15"
+rtlsdr_mt = "2.2.0"
+num-complex = "0.4.6"
+eframe = "0.33.3"
+egui = "0.33.3"
+egui_plot = "0.34.1"
+
