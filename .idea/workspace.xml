@@ -11,11 +11,16 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c89ae586-cad9-4a9e-bffa-1dbfd79a61c6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/HC12-RTLSDR-Demodulator.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/gui.rs" afterDir="false" />
+    <list default="true" id="97275181-2f99-40e1-aa8f-5a3dd9baaddb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/demodulator.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/demodulator.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sdr.rs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,30 +28,23 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Rust File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MacroExpansionManager">
-    <option name="directoryName" value="TwBPbVFA" />
+    <option name="directoryName" value="6VqVWcB2" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 4
+  &quot;associatedIndex&quot;: 6
 }</component>
-  <component name="ProjectId" id="39mNYcdawmGloI2RcxlUhTTM7Zj" />
+  <component name="ProjectId" id="3997P0mJQNpkC8zWW8tbokFuptG" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Cargo.Run HC12-RTLSDR-Demodulator.executor": "Run",
+    "Cargo.Run lora-rtlsdr-decoder.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -54,6 +52,7 @@
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/karsten/.rustup/toolchains/stable-x86_64-unknown-linux-gnu",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -63,12 +62,12 @@
     "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
     "org.rust.disableDetachedFileInspection/home/karsten/Projects/HC12-RTLSDR-Demodulator/src/gui.rs": "true",
     "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "language.rust.cargo.check",
+    "settings.editor.selected.configurable": "language.rust",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Cargo.Run HC12-RTLSDR-Demodulator">
-    <configuration name="Run HC12-RTLSDR-Demodulator" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <component name="RunManager" selected="Cargo.Run lora-rtlsdr-decoder">
+    <configuration name="Run lora-rtlsdr-decoder" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package HC12-RTLSDR-Demodulator --bin HC12-RTLSDR-Demodulator" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -86,7 +85,7 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Test HC12-RTLSDR-Demodulator" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+    <configuration name="Test lora-rtlsdr-decoder" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="command" value="test --workspace" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
@@ -103,23 +102,39 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Cargo.Run lora-rtlsdr-decoder" />
+      <item itemvalue="Cargo.Test lora-rtlsdr-decoder" />
+    </list>
   </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="c89ae586-cad9-4a9e-bffa-1dbfd79a61c6" name="Changes" comment="" />
-      <created>1771297335025</created>
+      <changelist id="97275181-2f99-40e1-aa8f-5a3dd9baaddb" name="Changes" comment="" />
+      <created>1770096408875</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1771297335025</updated>
-      <workItem from="1771297336281" duration="2049000" />
-      <workItem from="1771354795445" duration="23737000" />
+      <updated>1770096408875</updated>
+      <workItem from="1770096411197" duration="3114000" />
+      <workItem from="1770315176638" duration="619000" />
+      <workItem from="1770316048134" duration="1506000" />
+      <workItem from="1770317611286" duration="1694000" />
+      <workItem from="1770320104308" duration="472000" />
+      <workItem from="1770320729980" duration="2405000" />
+      <workItem from="1770324095455" duration="37000" />
+      <workItem from="1771624765348" duration="7000" />
+      <workItem from="1771624877493" duration="2474000" />
+      <workItem from="1771627395577" duration="789000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

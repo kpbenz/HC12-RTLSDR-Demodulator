@@ -1,6 +1,7 @@
 use num_complex::{Complex32};
 use std::f32::consts::PI;
 
+#[derive(Default)]
 pub struct GfskDemodulator {
     sample_rate: u32,
     bitrate: u32,
@@ -27,7 +28,7 @@ pub struct GfskDemodulator {
     deviation: f32,
 }
 
-impl GfskDemodulator {
+impl<'demod> GfskDemodulator {
     pub fn new(sample_rate: u32, bitrate: u32, deviation: f32) -> Self {
         let samples_per_bit = sample_rate as f32 / bitrate as f32;
         
