@@ -18,12 +18,12 @@ impl SignalVisualizer {
         
         Plot::new("constellation")
             .view_aspect(1.0)
-            .width(400.0)
+            .width(300.0)
             .height(300.0)
-            .include_x(-1.5)
-            .include_x(1.5)
-            .include_y(-1.5)
-            .include_y(1.5)
+            .include_x(-1.1)
+            .include_x(1.1)
+            .include_y(-1.1)
+            .include_y(1.1)
             .label_formatter(|_name, value| {
                 format!("I: {:.3}\nQ: {:.3}", value.x, value.y)
             })
@@ -37,7 +37,7 @@ impl SignalVisualizer {
                 plot_ui.points(
                     Points::new("IQ", points)
                         .radius(2.0)
-                        .color(egui::Color32::from_rgb(100, 200, 255))
+                        .color(egui::Color32::from_rgb(00, 255, 0))
                 );
             });
     }

@@ -12,6 +12,7 @@ pub struct RTLSDRController {
 pub enum RTLSDRCommand {
     SetFrequency(u32),
     SetSampleRate(u32),
+    SetGain(i32),
     Stop,
 }
 
@@ -85,14 +86,18 @@ impl RTLSDRController {
             eprintln!("Failed to set sample rate: {:?}", e);
         }
         
-        if let Err(e) = device.set_center_freq(915_000_000) {
+        if let Err(e) = device.set_center_freq(460_100_000) {
             eprintln!("Failed to set frequency: {:?}", e);
         }
         
-        if let Err(e) = device.set_tuner_gain_mode(false) {
+        if let Err(e) = device.set_tuner_gain_mode(true) {
             eprintln!("Failed to set gain mode: {:?}", e);
         }
-        
+
+        if let Err(e) = device.set_tuner_gain(30) {
+            eprintln!("Failed to set gain: {:?}", e);
+        }
+
         if let Err(e) = device.reset_buffer() {
             eprintln!("Failed to reset buffer: {:?}", e);
         }
@@ -105,6 +110,9 @@ impl RTLSDRController {
                 match cmd {
                     RTLSDRCommand::SetFrequency(freq) => {
                         device.set_center_freq(freq).ok();
+                    }
+                    RTLSDRCommand::SetGain(gain) => {
+                        device.set_tuner_gain(gain).ok();
                     }
                     RTLSDRCommand::SetSampleRate(rate) => {
                         device.set_sample_rate(rate).ok();
@@ -174,6 +182,12 @@ impl RTLSDRController {
     pub fn set_frequency(&self, freq: u32) {
         if let Some(tx) = &self.control_tx {
             tx.send(RTLSDRCommand::SetFrequency(freq)).ok();
+        }
+    }
+
+    pub fn set_gain(&self, freq: i32) {
+        if let Some(tx) = &self.control_tx {
+            tx.send(RTLSDRCommand::SetGain(freq)).ok();
         }
     }
 

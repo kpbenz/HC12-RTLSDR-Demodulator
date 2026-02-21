@@ -92,6 +92,20 @@ impl eframe::App for HC12DecoderApp {
                     }
                     ui.end_row();
 
+                    ui.label("Gain (dB):");
+                    let mut gain = self.config.gain as f32 / 10.0;
+                    if ui.add(
+                        egui::DragValue::new(&mut gain)
+                            .speed(0.1)
+                            .range(0.0..=40.0)
+                            .suffix(" dB")
+                    ).changed() {
+                        self.config.gain = (gain * 10.0 as i32;
+                        if let Some(rtlsdr) = &self.rtlsdr {
+                            rtlsdr.set_tuner_gain(self.config.gain);
+                        }
+                    }
+                    ui.end_row();
                     ui.label("Bandwidth:");
                     let mut bw_khz = self.config.bandwidth / 1000.0;
                     if ui.add(

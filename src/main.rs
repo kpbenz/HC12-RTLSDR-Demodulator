@@ -31,6 +31,7 @@ struct HC12App {
     
     // Settings
     frequency: u32,
+    gain: i32,
     sample_rate: u32,
     spreading_factor: u8,
     bandwidth: u32,
@@ -63,7 +64,8 @@ impl HC12App {
             decoder: HC12Decoder::new(7, 125_000),
             visualizer: SignalVisualizer::new(),
             
-            frequency: 915_000_000,
+            frequency: 460_100_000,
+            gain: 300,
             sample_rate: 2_048_000,
             spreading_factor: 7,
             bandwidth: 125_000,
@@ -181,7 +183,21 @@ impl eframe::App for HC12App {
             }
             
             ui.separator();
-            
+
+            ui.label("Gain (dB):");
+            let mut gain_db = self.gain as f32 / 10.0;
+            if ui.add(egui::Slider::new(&mut gain_db, 0.0..=40.0)
+                .fixed_decimals(1)
+                .step_by(0.1)
+                .suffix(" dB")).changed() {
+                self.gain = (gain_db * 10.0) as i32;
+                if let Some(ref rtlsdr) = self.rtlsdr {
+                    rtlsdr.set_gain(self.gain);
+                }
+            }
+
+            ui.separator();
+
             ui.label("Spreading Factor:");
             if ui.add(egui::Slider::new(&mut self.spreading_factor, 7..=12).suffix(" SF")).changed() {
                 self.decoder = HC12Decoder::new(self.spreading_factor, self.bandwidth);
