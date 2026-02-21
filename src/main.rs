@@ -233,16 +233,26 @@ impl eframe::App for HC12App {
                 
                 ui.separator();
                 
-                // Spectrum / Magnitude
+                // Magnitude
                 ui.heading("Signal Magnitude");
                 if !self.current_samples.is_empty() {
                     self.visualizer.plot_spectrum(ui, &self.current_samples);
                 } else {
                     ui.label("No data");
                 }
-                
+
                 ui.separator();
-                
+
+                // Spectrum
+                ui.heading("Signal Spectrum");
+                if !self.current_samples.is_empty() {
+                    self.visualizer.plot_fft(ui, &self.current_samples);
+                } else {
+                    ui.label("No data");
+                }
+
+                ui.separator();
+
                 // Decoded symbols
                 ui.heading("Decoded Symbols");
                 if !self.decoded_symbols.is_empty() {
