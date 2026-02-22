@@ -1,13 +1,43 @@
+
+mod constants;
 mod rtlsdr;
 mod hc12_decoder;
 mod visualizer;
 
+use constants::SDR_SAMPLE_RATE;
 use eframe::egui;
 use egui::load::Result;
 use num_complex::Complex32;
 use rtlsdr::RTLSDRController;
 use hc12_decoder::HC12Decoder;
 use visualizer::SignalVisualizer;
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum BitRate {
+    Rate5000,
+    Rate15000,
+    Rate58000,
+    Rate236000,
+}
+
+impl BitRate {
+    fn as_value(self) -> u32 {
+        match self {
+            BitRate::Rate5000 => 5000,
+            BitRate::Rate15000 => 15000,
+            BitRate::Rate58000 => 58000,
+            BitRate::Rate236000 => 236000,
+        }
+    }
+    fn as_string(self) -> String {
+        match self {
+            BitRate::Rate5000 => "5000".to_string(),
+            BitRate::Rate15000 => "15000".to_string(),
+            BitRate::Rate58000 => "58000".to_string(),
+            BitRate::Rate236000 => "236000".to_string(),
+        }
+    }
+}
 
 fn main() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions {
@@ -32,6 +62,7 @@ struct HC12App {
     // Settings
     frequency: u32,
     gain: i32,
+    bit_rate: BitRate,
     sample_rate: u32,
     spreading_factor: u8,
     bandwidth: u32,
@@ -64,9 +95,10 @@ impl HC12App {
             decoder: HC12Decoder::new(7, 125_000),
             visualizer: SignalVisualizer::new(),
             
-            frequency: 460_100_000,
+            frequency: constants::SDR_CENTER_FREQUENCY,
             gain: 300,
-            sample_rate: 2_048_000,
+            bit_rate: BitRate::Rate15000,
+            sample_rate: SDR_SAMPLE_RATE,
             spreading_factor: 7,
             bandwidth: 125_000,
             
@@ -170,7 +202,7 @@ impl eframe::App for HC12App {
             ui.heading("Settings");
             ui.separator();
             
-            ui.label("Frequency (MHz):");
+            ui.label("Frequency:");
             let mut freq_mhz = self.frequency as f32 / 1_000_000.0;
             if ui.add(egui::Slider::new(&mut freq_mhz, 24.0..=1766.0)
                 .fixed_decimals(3)
@@ -184,7 +216,7 @@ impl eframe::App for HC12App {
             
             ui.separator();
 
-            ui.label("Gain (dB):");
+            ui.label("Gain:");
             let mut gain_db = self.gain as f32 / 10.0;
             if ui.add(egui::Slider::new(&mut gain_db, 0.0..=40.0)
                 .fixed_decimals(1)
@@ -198,11 +230,21 @@ impl eframe::App for HC12App {
 
             ui.separator();
 
-            ui.label("Spreading Factor:");
-            if ui.add(egui::Slider::new(&mut self.spreading_factor, 7..=12).suffix(" SF")).changed() {
-                self.decoder = HC12Decoder::new(self.spreading_factor, self.bandwidth);
+            ui.label("Bitrate:");
+            if ui.radio_value(&mut self.bit_rate, BitRate::Rate5000, BitRate::Rate5000.as_string()).clicked() {
+                self.bit_rate = BitRate::Rate5000;
             }
-            
+            if ui.radio_value(&mut self.bit_rate, BitRate::Rate15000, BitRate::Rate15000.as_string()).clicked() {
+                self.bit_rate = BitRate::Rate15000;
+            }
+            if ui.radio_value(&mut self.bit_rate, BitRate::Rate58000, BitRate::Rate58000.as_string()).clicked() {
+                self.bit_rate = BitRate::Rate58000;
+            }
+            if ui.radio_value(&mut self.bit_rate, BitRate::Rate236000, BitRate::Rate236000.as_string()).clicked() {
+                self.bit_rate = BitRate::Rate236000;
+            }
+
+
             ui.separator();
             
             ui.label("Bandwidth:");
@@ -252,7 +294,7 @@ impl eframe::App for HC12App {
                 // Magnitude
                 ui.heading("Signal Magnitude");
                 if !self.current_samples.is_empty() {
-                    self.visualizer.plot_spectrum(ui, &self.current_samples);
+                    self.visualizer.plot_magnitude(ui, &self.current_samples);
                 } else {
                     ui.label("No data");
                 }

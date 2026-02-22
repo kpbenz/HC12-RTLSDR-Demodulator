@@ -1,7 +1,11 @@
+use crate::constants::SDR_CENTER_FREQUENCY;
+
 use crossbeam_channel::{Sender, Receiver, unbounded};
 use num_complex::Complex32;
 use std::thread;
 use std::sync::{Arc, Mutex};
+
+
 
 pub struct RTLSDRController {
     sample_rx: Receiver<Vec<Complex32>>,
@@ -85,8 +89,8 @@ impl RTLSDRController {
         if let Err(e) = device.set_sample_rate(2_048_000) {
             eprintln!("Failed to set sample rate: {:?}", e);
         }
-        
-        if let Err(e) = device.set_center_freq(460_100_000) {
+
+        if let Err(e) = device.set_center_freq(SDR_CENTER_FREQUENCY) {
             eprintln!("Failed to set frequency: {:?}", e);
         }
         
