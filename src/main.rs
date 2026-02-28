@@ -64,7 +64,6 @@ struct HC12App {
     gain: i32,
     bit_rate: BitRate,
     sample_rate: u32,
-    spreading_factor: u8,
     bandwidth: u32,
 
     // State
@@ -99,7 +98,6 @@ impl HC12App {
             gain: 300,
             bit_rate: BitRate::Rate15000,
             sample_rate: SDR_SAMPLE_RATE,
-            spreading_factor: 7,
             bandwidth: 125_000,
             
             current_samples: Vec::new(),
@@ -253,7 +251,7 @@ impl eframe::App for HC12App {
                 .show_ui(ui, |ui| {
                     for bw in [125_000u32, 250_000, 500_000] {
                         if ui.selectable_value(&mut self.bandwidth, bw, format!("{} kHz", bw / 1000)).clicked() {
-                            self.decoder = HC12Decoder::new(self.spreading_factor, self.bandwidth);
+                            self.decoder = HC12Decoder::new(2048_usize, self.bandwidth);
                         }
                     }
                 });
@@ -281,23 +279,30 @@ impl eframe::App for HC12App {
         // Central panel - Visualizations
         egui::CentralPanel::default().show(ctx, |ui| {
             egui::ScrollArea::vertical().show(ui, |ui| {
-                // Constellation diagram
-                ui.heading("IQ Constellation");
-                if !self.current_samples.is_empty() {
-                    self.visualizer.plot_constellation(ui, &self.current_samples);
-                } else {
-                    ui.label("No data");
-                }
-                
-                ui.separator();
-                
-                // Magnitude
-                ui.heading("Signal Magnitude");
-                if !self.current_samples.is_empty() {
-                    self.visualizer.plot_magnitude(ui, &self.current_samples);
-                } else {
-                    ui.label("No data");
-                }
+                ui.horizontal( |ui| {
+
+                    ui.vertical(|ui| {
+                        // Constellation diagram
+                        ui.heading("IQ Constellation");
+                        if !self.current_samples.is_empty() {
+                            self.visualizer.plot_constellation(ui, &self.current_samples);
+                        } else {
+                            ui.label("No data");
+                        }
+                    });
+
+                    ui.separator();
+
+                    ui.vertical(|ui| {
+                        // Magnitude
+                        ui.heading("Signal Magnitude");
+                        if !self.current_samples.is_empty() {
+                            self.visualizer.plot_magnitude(ui, &self.current_samples);
+                        } else {
+                            ui.label("No data");
+                        }
+                    });
+                });
 
                 ui.separator();
 

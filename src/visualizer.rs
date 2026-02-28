@@ -23,8 +23,8 @@ impl SignalVisualizer {
         
         Plot::new("constellation")
             .view_aspect(1.0)
-            .width(300.0)
-            .height(300.0)
+            .width(250.0)
+            .height(250.0)
             .include_x(-1.1)
             .include_x(1.1)
             .include_y(-1.1)

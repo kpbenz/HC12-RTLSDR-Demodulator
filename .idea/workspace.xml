@@ -11,12 +11,10 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97275181-2f99-40e1-aa8f-5a3dd9baaddb" name="Changes" comment="Added gain control.">
-      <change afterPath="$PROJECT_DIR$/src/constants.rs" afterDir="false" />
+    <list default="true" id="97275181-2f99-40e1-aa8f-5a3dd9baaddb" name="Changes" comment="Added frequency labels to the x-axis and added some constants.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hc12_decoder.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/hc12_decoder.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rtlsdr.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rtlsdr.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visualizer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/visualizer.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +32,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;kpbenz&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:kpbenz/HC12-RTLSDR-Demodulator.git&quot;,
+    &quot;accountId&quot;: &quot;ac6c621b-e147-4de8-9f51-2af3b3e34d5b&quot;
+  }
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/main.rs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -48,31 +58,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Cargo.Run HC12-RTLSDR-Decomodulator.executor": "Run",
-    "Cargo.Run lora-rtlsdr-decoder.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.rust.reset.selective.auto.import": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/karsten/.rustup/toolchains/stable-x86_64-unknown-linux-gnu",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
-    "org.rust.disableDetachedFileInspection/home/karsten/Projects/HC12-RTLSDR-Demodulator/src/gui.rs": "true",
-    "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "editor.reader.mode",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Cargo.Run HC12-RTLSDR-Decomodulator.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Run lora-rtlsdr-decoder.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/karsten/.rustup/toolchains/stable-x86_64-unknown-linux-gnu&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
+    &quot;org.rust.disableDetachedFileInspection/home/karsten/Projects/HC12-RTLSDR-Demodulator/src/gui.rs&quot;: &quot;true&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.reader.mode&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Run HC12-RTLSDR-Decomodulator" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
@@ -118,7 +128,11 @@
       <workItem from="1771636703299" duration="570000" />
       <workItem from="1771637290793" duration="973000" />
       <workItem from="1771638279083" duration="6785000" />
-      <workItem from="1771711514241" duration="13878000" />
+      <workItem from="1771711514241" duration="17062000" />
+      <workItem from="1771909802854" duration="671000" />
+      <workItem from="1772214058656" duration="24000" />
+      <workItem from="1772304258769" duration="609000" />
+      <workItem from="1772304960097" duration="2798000" />
     </task>
     <task id="LOCAL-00001" summary="Added spectrum.">
       <option name="closed" value="true" />
@@ -136,7 +150,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771642165910</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added frequency labels to the x-axis and added some constants.">
+      <option name="closed" value="true" />
+      <created>1771725970760</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1771725970760</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -145,7 +167,19 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added spectrum." />
     <MESSAGE value="Added gain control." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added gain control." />
+    <MESSAGE value="Added frequency labels to the x-axis and added some constants." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added frequency labels to the x-axis and added some constants." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/main.rs</url>
+          <line>280</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -2,7 +2,6 @@ use num_complex::Complex32;
 use rustfft::{FftPlanner, num_complex::Complex};
 
 pub struct HC12Decoder {
-    spreading_factor: u8,
     bandwidth: u32,
     fft_size: usize,
     fft_planner: FftPlanner<f32>,
@@ -15,11 +14,8 @@ pub struct DecodeResult {
 }
 
 impl HC12Decoder {
-    pub fn new(spreading_factor: u8, bandwidth: u32) -> Self {
-        let fft_size = 1 << spreading_factor; // 2^SF
-        
+    pub fn new(fft_size: usize, bandwidth: u32) -> Self {
         Self {
-            spreading_factor,
             bandwidth,
             fft_size,
             fft_planner: FftPlanner::new(),
@@ -73,7 +69,7 @@ impl HC12Decoder {
     
     fn extract_symbols(&mut self, samples: &[Complex32], offset: usize) -> Vec<u16> {
         let mut symbols = Vec::new();
-        let sf = self.spreading_factor as usize;
+        let sf = 7;
         let symbol_size = 1 << sf;
         
         // Generate base downchirp for dechirping
@@ -109,7 +105,7 @@ impl HC12Decoder {
     fn generate_downchirp(&self) -> Vec<Complex32> {
         use std::f32::consts::PI;
         
-        let n = 1 << self.spreading_factor;
+        let n = 1 << 7;
         let mut chirp = Vec::with_capacity(n);
         
         for i in 0..n {
@@ -145,12 +141,12 @@ impl HC12Decoder {
         }
         
         // Symbol value is the peak bin, wrapped to SF bits
-        let mask = (1u16 << self.spreading_factor) - 1;
+        let mask = (1u16 << 7) - 1;
         (peak_bin as u16) & mask
     }
     
     fn symbols_to_bytes(&self, symbols: &[u16]) -> Vec<u8> {
-        let sf = self.spreading_factor;
+        let sf = 7;
         
         match sf {
             // SF < 8: Need to pack multiple symbols into bytes
@@ -219,12 +215,7 @@ impl HC12Decoder {
             0.0
         }
     }
-    
-    pub fn set_spreading_factor(&mut self, sf: u8) {
-        self.spreading_factor = sf.clamp(7, 12);
-        self.fft_size = 1 << self.spreading_factor;
-    }
-    
+
     pub fn set_bandwidth(&mut self, bw: u32) {
         self.bandwidth = bw;
     }
