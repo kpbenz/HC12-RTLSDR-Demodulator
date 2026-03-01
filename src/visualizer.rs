@@ -1,5 +1,5 @@
 use egui_plot::{Line, Plot, PlotPoints, Points};
-use num_complex::Complex32;
+use rustfft::{FftPlanner, num_complex::Complex32};
 use egui;
 use crate::constants::*;
 
@@ -12,8 +12,8 @@ pub struct SignalVisualizer {
 impl SignalVisualizer {
     pub fn new() -> Self {
         Self {
-            history_size: 2048,
-            sample_rate:  2_048_000, // TODO: get sample rate from main.
+            history_size: 4096,
+            sample_rate:  SDR_SAMPLE_RATE, // TODO: get sample rate from main.
             center_frequency: SDR_CENTER_FREQUENCY, // TODO: get center frequency from main.
         }
     }
@@ -54,16 +54,16 @@ impl SignalVisualizer {
             .width(700.0)
             .height(250.0)
             .include_y(0.0)
-            .include_y(1.0)
+            .include_y(-30.0)
             .label_formatter(|_name, value| {
-                format!("Sample: {:.0}\nMagnitude: {:.3}", value.x, value.y)
+                format!("Sample: {:.0}\nMagnitude: {:.3} dB", value.x, value.y)
             })
             .show(ui, |plot_ui| {
                 let magnitude: PlotPoints = samples.iter()
                     .step_by(step.max(1))
                     .enumerate()
                     .take(self.history_size)
-                    .map(|(i, c)| [i as f64, c.norm() as f64])
+                    .map(|(i, c)| [i as f64, (10.0 * (c.norm() + 1e-10).log10()) as f64])
                     .collect();
                 
                 plot_ui.line(
@@ -74,51 +74,61 @@ impl SignalVisualizer {
             });
     }
 
+    fn compute_shifted_spectrum(&self, iq_samples: &[Complex32]) -> (Vec<f32>, Vec<f32>) {
+        let n = iq_samples.len();
+        let mut buffer = iq_samples.to_vec();
+
+        // Plan and execute FFT
+        let mut planner = FftPlanner::new();
+        let fft = planner.plan_fft_forward(n);
+        fft.process(&mut buffer);
+
+        // Compute magnitude and apply fftshift
+        let half = n / 2;
+        let mut shifted_mags = vec![0.0; n];
+
+        // FFT shift: swap halves
+        for i in 0..half {
+            shifted_mags[i] = 10.0 * (buffer[i + half].norm() + 10e-12).log10();
+            shifted_mags[i + half] =  10.0 * (buffer[i].norm() + 10e-12).log10();
+        }
+
+        // Generate frequency axis (shifted)
+        let freq_axis: Vec<f32> = (0..n)
+        .map(|k| {
+            let offset = (k as f32 - half as f32) * self.sample_rate as f32 / n as f32;
+            (self.center_frequency as f32 + offset) / 1_000_000.0
+        })
+        .collect();
+
+        (freq_axis, shifted_mags)
+    }
+
+
     pub fn plot_fft(&self, ui: &mut egui::Ui, samples: &[Complex32]) {
-        use rustfft::{FftPlanner, num_complex::Complex};
 
         if samples.len() < 64 {
             ui.label("Not enough samples for FFT");
             return;
         }
 
-        // Compute FFT
-        let fft_size = self.history_size.min(samples.len().next_power_of_two());
+        let mut buffer: Vec<Complex32> = samples.to_vec();
 
-        // Calculate frequency resolution
-        let delta_f = self.sample_rate as f64/ fft_size as f64;
+        let (freqs, mags) = self.compute_shifted_spectrum(&buffer);
 
-        let mut planner = FftPlanner::new();
-        let fft = planner.plan_fft_forward(fft_size);
-
-        let mut buffer: Vec<Complex<f32>> = samples.iter()
-            .take(fft_size)
-            .map(|c| Complex::new(c.re, c.im))
+        let fft_points: Vec<[f64; 2]> = freqs.iter().zip(mags.iter())
+            .map(|(&f, &m)| [f as f64, m as f64])
             .collect();
-        buffer.resize(fft_size, Complex::new(0.0, 0.0));
-
-        fft.process(&mut buffer);
 
         Plot::new("fft")
-            .width(700.0)
-            .height(300.0)
-            .include_y(-50.0)
-            .include_y(60.0)
+            .width(970.0)
+            .height(250.0)
+            .include_y(-30.0)
+            .include_y(50.0)
             .label_formatter(|_name, value| {
-                format!("Frequency: {:.1} MHz\nPower: {:.1} dB", value.x, value.y)
+                format!("Frequency: {:.3} MHz\nPower: {:.1} dB", value.x, value.y)
             })
             .show(ui, |plot_ui| {
-                // Convert to dB scale, show only positive frequencies
-                let fft_points: PlotPoints = buffer.iter()
-                    .take(fft_size)
-                    .enumerate()
-                    .map(|(i, c)| {
-                        let power_db:  f64 = (10.0 * (c.norm_sqr() + 1e-10).log10()).into();
-                        let frequency: f64 = (self.center_frequency as f64 - (fft_size as f64)*delta_f/2.0   + i as f64 * delta_f) / 1_000_000.0;
-                        [frequency, power_db]
-                    })
-                    .collect();
-
                 plot_ui.line(
                     Line::new("FFT", fft_points)
                         .color(egui::Color32::from_rgb(200, 100, 255))

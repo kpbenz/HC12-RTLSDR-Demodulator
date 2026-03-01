@@ -1,4 +1,4 @@
-use crate::constants::SDR_CENTER_FREQUENCY;
+use crate::constants::{SDR_CENTER_FREQUENCY,SDR_DEFAULT_GAIN,SDR_SAMPLE_RATE,SDR_BUFFER_SIZE};
 
 use crossbeam_channel::{Sender, Receiver, unbounded};
 use num_complex::Complex32;
@@ -58,7 +58,8 @@ impl RTLSDRController {
         control_rx: Receiver<RTLSDRCommand>,
         is_running: Arc<Mutex<bool>>,
     ) {
-        // Try to initialize RTL-SDR device
+        // Try to initialize RTL-SDR :w
+        // device
         let device_result = rtlsdr::open(0);
         
         let mut device = match device_result {
@@ -86,7 +87,7 @@ impl RTLSDRController {
         };
 
         // Configure device
-        if let Err(e) = device.set_sample_rate(2_048_000) {
+        if let Err(e) = device.set_sample_rate(SDR_SAMPLE_RATE) {
             eprintln!("Failed to set sample rate: {:?}", e);
         }
 
@@ -98,7 +99,7 @@ impl RTLSDRController {
             eprintln!("Failed to set gain mode: {:?}", e);
         }
 
-        if let Err(e) = device.set_tuner_gain(30) {
+        if let Err(e) = device.set_tuner_gain(SDR_DEFAULT_GAIN) {
             eprintln!("Failed to set gain: {:?}", e);
         }
 
@@ -129,7 +130,7 @@ impl RTLSDRController {
             }
 
             // Read samples - read_sync takes length and returns Vec<u8>
-            match device.read_sync(262144) {
+            match device.read_sync(SDR_BUFFER_SIZE) {
                 Ok(buffer) => {
                     let samples = Self::convert_iq(&buffer);
                     sample_tx.send(samples).ok();
@@ -142,6 +143,8 @@ impl RTLSDRController {
         }
     }
 
+    /// Convert the buffer read from the RTLSDR dongle from [u8,u8] representing
+    /// I and Q data to [f32,f32], mapping the range 0 ... 255 to -1.0 ... +1.0.
     fn convert_iq(buffer: &[u8]) -> Vec<Complex32> {
         buffer.chunks_exact(2)
             .map(|chunk| {

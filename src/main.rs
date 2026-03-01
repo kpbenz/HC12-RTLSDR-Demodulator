@@ -95,9 +95,9 @@ impl HC12App {
             visualizer: SignalVisualizer::new(),
             
             frequency: constants::SDR_CENTER_FREQUENCY,
-            gain: 300,
+            gain: constants::SDR_DEFAULT_GAIN,
             bit_rate: BitRate::Rate15000,
-            sample_rate: SDR_SAMPLE_RATE,
+            sample_rate: constants::SDR_SAMPLE_RATE,
             bandwidth: 125_000,
             
             current_samples: Vec::new(),
@@ -202,7 +202,7 @@ impl eframe::App for HC12App {
             
             ui.label("Frequency:");
             let mut freq_mhz = self.frequency as f32 / 1_000_000.0;
-            if ui.add(egui::Slider::new(&mut freq_mhz, 24.0..=1766.0)
+            if ui.add(egui::Slider::new(&mut freq_mhz,430.0..=470.0)
                 .fixed_decimals(3)
                 .step_by(0.1)
                 .suffix(" MHz")).changed() {
@@ -313,7 +313,7 @@ impl eframe::App for HC12App {
                 } else {
                     ui.label("No data");
                 }
-
+/*
                 ui.separator();
 
                 // Decoded symbols
@@ -342,6 +342,8 @@ impl eframe::App for HC12App {
                         ui.monospace(&self.decoded_text);
                     });
                 }
+
+ */
             });
         });
     }
