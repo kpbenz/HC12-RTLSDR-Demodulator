@@ -1,7 +1,7 @@
 use egui_plot::{Line, Plot, PlotPoints, Points};
 use rustfft::{FftPlanner, num_complex::Complex32};
 use egui;
-use crate::constants::*;
+use crate::constants;
 
 pub struct SignalVisualizer {
     history_size: usize,
@@ -13,8 +13,8 @@ impl SignalVisualizer {
     pub fn new() -> Self {
         Self {
             history_size: 4096,
-            sample_rate:  SDR_SAMPLE_RATE, // TODO: get sample rate from main.
-            center_frequency: SDR_CENTER_FREQUENCY, // TODO: get center frequency from main.
+            sample_rate:  constants::SDR_SAMPLE_RATE, // TODO: get sample rate from main.
+            center_frequency: constants::SDR_DEFAULT_CENTER_FREQUENCY, // TODO: get centre frequency from main.
         }
     }
 
@@ -112,7 +112,7 @@ impl SignalVisualizer {
             return;
         }
 
-        let mut buffer: Vec<Complex32> = samples.to_vec();
+        let buffer: Vec<Complex32> = samples.to_vec();
 
         let (freqs, mags) = self.compute_shifted_spectrum(&buffer);
 

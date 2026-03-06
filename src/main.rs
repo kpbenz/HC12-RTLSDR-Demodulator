@@ -4,7 +4,6 @@ mod rtlsdr;
 mod hc12_decoder;
 mod visualizer;
 
-use constants::SDR_SAMPLE_RATE;
 use eframe::egui;
 use egui::load::Result;
 use num_complex::Complex32;
@@ -68,7 +67,7 @@ struct HC12App {
 
     // State
     current_samples: Vec<Complex32>,
-    decoded_symbols: Vec<u16>,
+    decoded_symbols: Vec<f32>,
     decoded_bytes: Vec<u8>,
     decoded_text: String,
     status_message: String,
@@ -88,18 +87,21 @@ impl HC12App {
                 None
             }
         };
-        
+
+        let decoder = HC12Decoder::new(constants::SDR_SAMPLE_RATE as f32,
+                                       BitRate::Rate15000.as_value() as f32,25000.0);
+
         Self {
             rtlsdr,
-            decoder: HC12Decoder::new(7, 125_000),
+            decoder,
             visualizer: SignalVisualizer::new(),
-            
-            frequency: constants::SDR_CENTER_FREQUENCY,
+
+            frequency: constants::SDR_DEFAULT_CENTER_FREQUENCY,
             gain: constants::SDR_DEFAULT_GAIN,
             bit_rate: BitRate::Rate15000,
             sample_rate: constants::SDR_SAMPLE_RATE,
             bandwidth: 125_000,
-            
+
             current_samples: Vec::new(),
             decoded_symbols: Vec::new(),
             decoded_bytes: Vec::new(),
@@ -115,22 +117,26 @@ impl HC12App {
                 self.current_samples = samples.clone();
                 
                 // Decode HC12 signal
-                match self.decoder.decode(&samples) {
+                match self.decoder.demodulate(&samples) {
                     Ok(result) => {
-                        self.decoded_symbols = result.symbols.clone();
-                        self.decoded_bytes = result.bytes.clone();
-                        
-                        // Try to convert to text
-                        if let Ok(text) = String::from_utf8(result.bytes.clone()) {
-                            if !text.is_empty() && text.chars().all(|c| c.is_ascii_graphic() || c.is_ascii_whitespace()) {
-                                self.decoded_text = text;
-                            }
-                        }
-                        
+                        self.decoded_symbols = result.clone();
+
+                        // Convert to bits
+                        let bits: Vec<bool> = self.decoded_symbols.iter().map(|&s| s > 0.0).collect();
+
+                        // 4. Pack bits into bytes
+                        let bytes:Vec<u8> = bits.chunks(8).map(|chunk| {
+                            chunk.iter().enumerate().fold(0u8, |acc, (i, &b)| {
+                                acc | (if b { 1 << (7-i) } else { 0 })
+                            })
+                        }).collect();
+
+                        let string: String = bytes.iter().map(|b| format!("{:02x} ", b)).collect();
+                        println!("{:#?}",string);
+
                         self.status_message = format!(
-                            "Decoded {} symbols, {} bytes",
-                            result.symbols.len(),
-                            result.bytes.len()
+                            "Decoded {} symbols.",
+                            self.decoded_symbols.len(),
                         );
                     }
                     Err(e) => {
@@ -141,9 +147,8 @@ impl HC12App {
         } else {
             // Simulation mode - generate test data
             self.current_samples = Self::generate_test_samples();
-            if let Ok(result) = self.decoder.decode(&self.current_samples) {
-                self.decoded_symbols = result.symbols;
-                self.decoded_bytes = result.bytes;
+            if let Ok(result) = self.decoder.demodulate(&self.current_samples) {
+                self.decoded_symbols = result;
             }
         }
     }
@@ -251,7 +256,7 @@ impl eframe::App for HC12App {
                 .show_ui(ui, |ui| {
                     for bw in [125_000u32, 250_000, 500_000] {
                         if ui.selectable_value(&mut self.bandwidth, bw, format!("{} kHz", bw / 1000)).clicked() {
-                            self.decoder = HC12Decoder::new(2048_usize, self.bandwidth);
+                            self.decoder = HC12Decoder::new(self.sample_rate as f32, self.bit_rate.as_value() as f32, 25000.0);
                         }
                     }
                 });
@@ -307,7 +312,7 @@ impl eframe::App for HC12App {
                 ui.separator();
 
                 // Spectrum
-                ui.heading("Signal Spectrum");
+                ui.heading("Signal Energy Spectrum");
                 if !self.current_samples.is_empty() {
                     self.visualizer.plot_fft(ui, &self.current_samples);
                 } else {

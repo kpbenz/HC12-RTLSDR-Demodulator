@@ -1,4 +1,4 @@
-use crate::constants::{SDR_CENTER_FREQUENCY,SDR_DEFAULT_GAIN,SDR_SAMPLE_RATE,SDR_BUFFER_SIZE};
+use crate::constants;
 
 use crossbeam_channel::{Sender, Receiver, unbounded};
 use num_complex::Complex32;
@@ -87,11 +87,11 @@ impl RTLSDRController {
         };
 
         // Configure device
-        if let Err(e) = device.set_sample_rate(SDR_SAMPLE_RATE) {
+        if let Err(e) = device.set_sample_rate(constants::SDR_SAMPLE_RATE) {
             eprintln!("Failed to set sample rate: {:?}", e);
         }
 
-        if let Err(e) = device.set_center_freq(SDR_CENTER_FREQUENCY) {
+        if let Err(e) = device.set_center_freq(constants::SDR_DEFAULT_CENTER_FREQUENCY) {
             eprintln!("Failed to set frequency: {:?}", e);
         }
         
@@ -99,7 +99,7 @@ impl RTLSDRController {
             eprintln!("Failed to set gain mode: {:?}", e);
         }
 
-        if let Err(e) = device.set_tuner_gain(SDR_DEFAULT_GAIN) {
+        if let Err(e) = device.set_tuner_gain(constants::SDR_DEFAULT_GAIN) {
             eprintln!("Failed to set gain: {:?}", e);
         }
 
@@ -130,7 +130,7 @@ impl RTLSDRController {
             }
 
             // Read samples - read_sync takes length and returns Vec<u8>
-            match device.read_sync(SDR_BUFFER_SIZE) {
+            match device.read_sync(constants::SDR_BUFFER_SIZE) {
                 Ok(buffer) => {
                     let samples = Self::convert_iq(&buffer);
                     sample_tx.send(samples).ok();
