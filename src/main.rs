@@ -88,8 +88,10 @@ impl HC12App {
             }
         };
 
-        let decoder = HC12Decoder::new(constants::SDR_SAMPLE_RATE as f32,
-                                       BitRate::Rate15000.as_value() as f32,25000.0);
+        let decoder = HC12Decoder::new(constants::SDR_DEFAULT_CENTER_FREQUENCY as f32,
+                                       constants::SDR_SAMPLE_RATE as f32,
+                                       BitRate::Rate15000.as_value() as f32,
+                                       15000.0);
 
         Self {
             rtlsdr,
@@ -214,6 +216,7 @@ impl eframe::App for HC12App {
                 self.frequency = (freq_mhz * 1_000_000.0) as u32;
                 if let Some(ref rtlsdr) = self.rtlsdr {
                     rtlsdr.set_frequency(self.frequency);
+                    self.decoder = HC12Decoder::new(self.frequency as f32, self.sample_rate as f32, self.bit_rate.as_value() as f32, 15000.0);
                 }
             }
             
@@ -256,7 +259,7 @@ impl eframe::App for HC12App {
                 .show_ui(ui, |ui| {
                     for bw in [125_000u32, 250_000, 500_000] {
                         if ui.selectable_value(&mut self.bandwidth, bw, format!("{} kHz", bw / 1000)).clicked() {
-                            self.decoder = HC12Decoder::new(self.sample_rate as f32, self.bit_rate.as_value() as f32, 25000.0);
+                            self.decoder = HC12Decoder::new(self.frequency as f32, self.sample_rate as f32, self.bit_rate.as_value() as f32, 15000.0);
                         }
                     }
                 });
@@ -318,37 +321,78 @@ impl eframe::App for HC12App {
                 } else {
                     ui.label("No data");
                 }
-/*
+
                 ui.separator();
 
-                // Decoded symbols
-                ui.heading("Decoded Symbols");
-                if !self.decoded_symbols.is_empty() {
-                    self.visualizer.plot_symbols(ui, &self.decoded_symbols);
+                // Spectrum
+                ui.heading("Instantaneous Frequency in Time Domain");
+                if !self.decoder.instant_freq.is_empty() {
+                    self.visualizer.plot_instantaneous_frequency(ui, &self.decoder.instant_freq);
                 } else {
-                    ui.label("No symbols decoded");
-                }
-                
-                ui.separator();
-                
-                // Decoded data
-                ui.heading("Decoded Data");
-                ui.horizontal_wrapped(|ui| {
-                    ui.label("Hex:");
-                    let hex_str: String = self.decoded_bytes.iter()
-                        .map(|b| format!("{:02X} ", b))
-                        .collect();
-                    ui.monospace(&hex_str);
-                });
-                
-                if !self.decoded_text.is_empty() {
-                    ui.horizontal_wrapped(|ui| {
-                        ui.label("Text:");
-                        ui.monospace(&self.decoded_text);
-                    });
+                    ui.label("No data");
                 }
 
- */
+                ui.separator();
+
+                // Spectrum
+                ui.heading("Instantaneous Frequency in Frequency Domain");
+                if !self.decoder.instant_freq.is_empty() {
+                    self.visualizer.plot_fft_real(ui, &self.decoder.instant_freq);
+                } else {
+                    ui.label("No data");
+                }
+
+                ui.separator();
+
+                // Spectrum
+                ui.heading("Filtered Frequency in Time Domain");
+                if !self.decoder.filtered_freq.is_empty() {
+                    self.visualizer.plot_filtered_frequency(ui, &self.decoder.filtered_freq);
+                } else {
+                    ui.label("No data");
+                }
+
+                ui.separator();
+
+                // Spectrum
+                ui.heading("Filtered Frequency in Frequency Domain");
+                if !self.decoder.filtered_freq.is_empty() {
+                    self.visualizer.plot_fft_real(ui, &self.decoder.filtered_freq);
+                } else {
+                    ui.label("No data");
+                }
+
+                /*
+                                ui.separator();
+
+                                // Decoded symbols
+                                ui.heading("Decoded Symbols");
+                                if !self.decoded_symbols.is_empty() {
+                                    self.visualizer.plot_symbols(ui, &self.decoded_symbols);
+                                } else {
+                                    ui.label("No symbols decoded");
+                                }
+
+                                ui.separator();
+
+                                // Decoded data
+                                ui.heading("Decoded Data");
+                                ui.horizontal_wrapped(|ui| {
+                                    ui.label("Hex:");
+                                    let hex_str: String = self.decoded_bytes.iter()
+                                        .map(|b| format!("{:02X} ", b))
+                                        .collect();
+                                    ui.monospace(&hex_str);
+                                });
+
+                                if !self.decoded_text.is_empty() {
+                                    ui.horizontal_wrapped(|ui| {
+                                        ui.label("Text:");
+                                        ui.monospace(&self.decoded_text);
+                                    });
+                                }
+
+                 */
             });
         });
     }

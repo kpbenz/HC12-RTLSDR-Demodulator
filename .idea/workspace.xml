@@ -11,13 +11,11 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97275181-2f99-40e1-aa8f-5a3dd9baaddb" name="Changes" comment="New default screensize.">
+    <list default="true" id="97275181-2f99-40e1-aa8f-5a3dd9baaddb" name="Changes" comment="Deleted gui.rs.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/constants.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/hc12_decoder.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/hc12_decoder.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rtlsdr.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rtlsdr.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/visualizer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/visualizer.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,7 +23,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:bench" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:release" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -62,35 +60,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Cargo.Run HC12-RTLSDR-Decomodulator.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Run lora-rtlsdr-decoder.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/karsten/.rustup/toolchains/stable-x86_64-unknown-linux-gnu&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
-    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
-    &quot;org.rust.disableDetachedFileInspection/home/karsten/Projects/HC12-RTLSDR-Demodulator/src/gui.rs&quot;: &quot;true&quot;,
-    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.reader.mode&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Cargo.Run HC12-RTLSDR-Decomodulator.executor": "Debug",
+    "Cargo.Run HC12-RTLSDR-Demodulator.executor": "Run",
+    "Cargo.Run lora-rtlsdr-decoder.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/karsten/.rustup/toolchains/stable-x86_64-unknown-linux-gnu",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "org.rust.disableDetachedFileInspection/home/karsten/Projects/HC12-RTLSDR-Demodulator/src/gui.rs": "true",
+    "org.rust.first.attach.projects": "true",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "editor.reader.mode",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
-    <configuration name="Run HC12-RTLSDR-Decomodulator" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-      <option name="buildProfileId" value="bench" />
+    <configuration name="Run HC12-RTLSDR-Demodulator" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="buildProfileId" value="release" />
       <option name="command" value="run --package HC12-RTLSDR-Demodulator --bin HC12-RTLSDR-Demodulator" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
@@ -142,7 +141,12 @@
       <workItem from="1772340571141" duration="1133000" />
       <workItem from="1772346205827" duration="9351000" />
       <workItem from="1772814641159" duration="1278000" />
-      <workItem from="1772816568787" duration="1289000" />
+      <workItem from="1772816568787" duration="2305000" />
+      <workItem from="1772818889097" duration="11886000" />
+      <workItem from="1772832286127" duration="150000" />
+      <workItem from="1772849007954" duration="499000" />
+      <workItem from="1772859337447" duration="1097000" />
+      <workItem from="1772907538095" duration="8204000" />
     </task>
     <task id="LOCAL-00001" summary="Added spectrum.">
       <option name="closed" value="true" />
@@ -184,7 +188,23 @@
       <option name="project" value="LOCAL" />
       <updated>1772308768605</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Restructuring and commenting.">
+      <option name="closed" value="true" />
+      <created>1772817999526</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1772817999526</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Deleted gui.rs.">
+      <option name="closed" value="true" />
+      <created>1772818189109</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1772818189109</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,20 +216,32 @@
     <MESSAGE value="Added frequency labels to the x-axis and added some constants." />
     <MESSAGE value="New layout: IQ constellation and Signal Magnitude beside each other." />
     <MESSAGE value="New default screensize." />
-    <option name="LAST_COMMIT_MESSAGE" value="New default screensize." />
+    <MESSAGE value="Restructuring and commenting." />
+    <MESSAGE value="Deleted gui.rs." />
+    <option name="LAST_COMMIT_MESSAGE" value="Deleted gui.rs." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/main.rs</url>
-          <line>215</line>
+          <line>217</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/rtlsdr.rs</url>
           <line>115</line>
           <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/visualizer.rs</url>
+          <line>148</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/visualizer.rs</url>
+          <line>96</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

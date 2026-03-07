@@ -12,7 +12,7 @@ pub struct SignalVisualizer {
 impl SignalVisualizer {
     pub fn new() -> Self {
         Self {
-            history_size: 4096,
+            history_size: 8192,
             sample_rate:  constants::SDR_SAMPLE_RATE, // TODO: get sample rate from main.
             center_frequency: constants::SDR_DEFAULT_CENTER_FREQUENCY, // TODO: get centre frequency from main.
         }
@@ -137,6 +137,99 @@ impl SignalVisualizer {
             });
     }
 
+    pub fn plot_fft_real(&self, ui: &mut egui::Ui, samples: &Vec<f32>) {
+
+        if samples.len() < 64 {
+            ui.label("Not enough samples for FFT");
+            return;
+        }
+
+        let mut buffer: Vec<Complex32> = samples.iter().map(|&x| Complex32::new(x, 0.0)).collect();
+
+        // Plan and execute FFT
+        let mut planner = FftPlanner::new();
+        let fft = planner.plan_fft_forward(buffer.len());
+        fft.process(&mut buffer);
+
+        let fft_points: Vec<[f64; 2]> = buffer.iter()
+            .enumerate()
+            .map(|(i, c)| [i as f64, (10.0 * (c.norm() + 1e-10).log10()) as f64])
+            .collect();
+
+        Plot::new("fft_real")
+            .width(970.0)
+            .height(250.0)
+            .label_formatter(|_name, value| {
+                format!("Frequency: {:.3} MHz\nPower: {:.1} dB", value.x, value.y)
+            })
+            .show(ui, |plot_ui| {
+                plot_ui.line(
+                    Line::new("FFT_Real", fft_points)
+                        .color(egui::Color32::from_rgb(160, 160, 255))
+                        .width(1.0)
+                );
+            });
+    }
+
+    pub fn plot_instantaneous_frequency(&self, ui: &mut egui::Ui, inst_freq: &Vec<f32>) {
+        let step = inst_freq.len().max(1) / self.history_size.min(inst_freq.len()).max(1);
+
+        if inst_freq.len() < 64 {
+            ui.label("Not enough samples for FFT");
+            return;
+        }
+
+        Plot::new("instantaneous_frequency")
+            .width(970.0)
+            .height(250.0)
+            .label_formatter(|_name, value| {
+                format!("Sample: {:.0}\nMagnitude: {:.3} dB", value.x, value.y)
+            })
+            .show(ui, |plot_ui| {
+                let inst_freq_points: PlotPoints = inst_freq.iter()
+                    .step_by(step.max(1))
+                    .enumerate()
+                    .take(self.history_size)
+                    .map(|(i, c)| [i as f64, *c as f64])
+                    .collect();
+
+                plot_ui.line(
+                    Line::new("Instantaneous Frequency", inst_freq_points)
+                        .color(egui::Color32::from_rgb(255, 128, 0))
+                        .width(1.0)
+                );
+            });
+    }
+
+    pub fn plot_filtered_frequency(&self, ui: &mut egui::Ui, filtered_freq: &Vec<f32>) {
+        let step = filtered_freq.len().max(1) / self.history_size.min(filtered_freq.len()).max(1);
+
+        if filtered_freq.len() < 64 {
+            ui.label("Not enough samples for FFT");
+            return;
+        }
+
+        Plot::new("filtered_frequency")
+            .width(970.0)
+            .height(250.0)
+            .label_formatter(|_name, value| {
+                format!("Sample: {:.0}\nMagnitude: {:.3} dB", value.x, value.y)
+            })
+            .show(ui, |plot_ui| {
+                let filtered_freq_points: PlotPoints = filtered_freq.iter()
+                    .step_by(step.max(1))
+                    .enumerate()
+                    .take(self.history_size)
+                    .map(|(i, c)| [i as f64, *c as f64])
+                    .collect();
+
+                plot_ui.line(
+                    Line::new("Filtered Frequency", filtered_freq_points)
+                        .color(egui::Color32::from_rgb(255, 0, 0))
+                        .width(1.0)
+                );
+            });
+    }
     pub fn plot_symbols(&self, ui: &mut egui::Ui, symbols: &[u16]) {
             if symbols.is_empty() {
                 return;

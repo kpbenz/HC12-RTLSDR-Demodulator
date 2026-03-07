@@ -3,54 +3,77 @@
 use num_complex::Complex32;
 
 pub struct HC12Decoder {
+    center_frequency: f32,
     sample_rate: f32,
     freq_deviation: f32,      // Expected frequency deviation (Hz)
     symbol_rate: f32,          // Symbol rate (baud)
     samples_per_symbol: usize,
+    pub instant_freq: Vec<f32>,     // Instantaneous frequency samples
+    pub filtered_freq: Vec<f32>,     // Filtered, instantaneous frequency samples
 }
 
 
 
 impl HC12Decoder {
-    pub fn new(sample_rate: f32, symbol_rate: f32, freq_deviation: f32) -> Self {
+    pub fn new(center_frequency: f32, sample_rate: f32, symbol_rate: f32, freq_deviation: f32) -> Self {
         Self {
+            center_frequency,
             sample_rate,
             freq_deviation,
             symbol_rate,
             samples_per_symbol: (sample_rate / symbol_rate) as usize,
+            instant_freq: Vec::new(),
+            filtered_freq: Vec::new(),
         }
     }
 
-    pub fn demodulate(&self, iq_samples: &[Complex32]) -> Result<Vec<f32>, String> {
+    pub fn demodulate(&mut self, iq_samples: &[Complex32]) -> Result<Vec<f32>, String> {
 
         if iq_samples.is_empty() {
             return Err("No samples provided".to_string());
         }
 
         // Stage 1: Extract instantaneous frequency
-        let instant_freq = self.compute_instantaneous_frequency(iq_samples);
+       self.instant_freq =self.compute_instantaneous_frequency(iq_samples);
 
         // Stage 2: Low-pass filter to remove noise
-        let filtered_freq = self.lowpass_filter(&instant_freq);
+        self.filtered_freq = self.lowpass_filter(&self.instant_freq);
 
         // Stage 3: Symbol timing recovery & decision
-        let symbols = self.recover_symbols(&filtered_freq);
+        let symbols = self.recover_symbols(&self.filtered_freq);
 
         Ok(symbols)
     }
     fn compute_instantaneous_frequency(&self, iq: &[Complex32]) -> Vec<f32> {
-        let mut freq = Vec::with_capacity(iq.len() - 1);
+        let num_samples = iq.len();
+        let mut mixed_signal = Vec::with_capacity(num_samples);
 
-        for window in iq.windows(2) {
+        // Move base band to 0Hz
+        for n in 0..num_samples {
+            let time = n as f32 / self.sample_rate;
+            let mixer = Complex32::from_polar(1.0, -2.0 * std::f32::consts::PI * self.center_frequency * time);
+            mixed_signal.push(iq[n] * mixer);
+        }
+        let mut freq = Vec::with_capacity(mixed_signal.len() - 1);
+
+        // Calculate instantaneous frequency and calculate the arithmetic mean.
+        let mut mean = 0.0_f64;
+        for window in mixed_signal.windows(2) {
             // Phase difference = angle between consecutive samples
             let phase_diff = (window[1] * window[0].conj()).arg();
 
             // Convert to frequency: Δφ * sample_rate / (2π)
             let instant_freq = phase_diff * self.sample_rate / (2.0 * std::f32::consts::PI);
+            mean += instant_freq as f64;
 
             freq.push(instant_freq);
         }
+        mean /= freq.len() as f64;
 
+        // Subtract the mean from each frequency value to remove DC offset
+        for value in freq.iter_mut() {
+            *value -= mean as f32;
+        }
         freq
     }
 
