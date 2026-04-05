@@ -58,8 +58,7 @@ impl RTLSDRController {
         control_rx: Receiver<RTLSDRCommand>,
         is_running: Arc<Mutex<bool>>,
     ) {
-        // Try to initialize RTL-SDR :w
-        // device
+        // Try to initialize RTL-SDR device
         let device_result = rtlsdr::open(0);
         
         let mut device = match device_result {
@@ -146,11 +145,18 @@ impl RTLSDRController {
     /// Convert the buffer read from the RTLSDR dongle from [u8,u8] representing
     /// I and Q data to [f32,f32], mapping the range 0 ... 255 to -1.0 ... +1.0.
     fn convert_iq(buffer: &[u8]) -> Vec<Complex32> {
+        let threshold = 0.5;
+        let threshold_sq = threshold * threshold; // compare squared magnitudes
         buffer.chunks_exact(2)
-            .map(|chunk| {
+            .filter_map(|chunk| {
                 let i = (chunk[0] as f32 - 127.5) / 127.5;
                 let q = (chunk[1] as f32 - 127.5) / 127.5;
-                Complex32::new(i, q)
+                // Check squared magnitude without constructing Complex32
+                if i * i + q * q >= threshold_sq {
+                    Some(Complex32::new(i, q))
+                } else {
+                    None
+                }
             })
             .collect()
     }
