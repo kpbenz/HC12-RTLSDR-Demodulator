@@ -1,5 +1,6 @@
 
 
+use std::f32::consts::PI;
 use num_complex::Complex32;
 
 pub struct HC12Decoder {
@@ -9,10 +10,9 @@ pub struct HC12Decoder {
     symbol_rate: f32,          // Symbol rate (baud)
     samples_per_symbol: usize,
     pub instant_freq: Vec<f32>,     // Instantaneous frequency samples
-    pub filtered_freq: Vec<f32>,     // Filtered, instantaneous frequency samples
+    pub filtered_freq: Vec<Complex32>,     // Filtered, instantaneous frequency samples
+    filter: Box<LowPassFilter>,
 }
-
-
 
 impl HC12Decoder {
     pub fn new(center_frequency: f32, sample_rate: f32, symbol_rate: f32, freq_deviation: f32) -> Self {
@@ -24,6 +24,11 @@ impl HC12Decoder {
             samples_per_symbol: (sample_rate / symbol_rate) as usize,
             instant_freq: Vec::new(),
             filtered_freq: Vec::new(),
+            filter: Box::new(LowPassFilter {
+                sample_rate: sample_rate,
+                cutoff_hz:   freq_deviation,
+                num_taps:    259,
+            })
         }
     }
 
@@ -33,32 +38,24 @@ impl HC12Decoder {
             return Err("No samples provided".to_string());
         }
 
-        // Stage 1: Extract instantaneous frequency
-       self.instant_freq =self.compute_instantaneous_frequency(iq_samples);
+        // Stage 1: Low-pass filter to remove noise
+        self.filtered_freq = self.filter.lowpass_filter(iq_samples);
 
-        // Stage 2: Low-pass filter to remove noise
-        self.filtered_freq = self.lowpass_filter(&self.instant_freq);
+        // Stage 2: Extract instantaneous frequency
+        self.instant_freq =self.compute_instantaneous_frequency(&self.filtered_freq);
 
         // Stage 3: Symbol timing recovery & decision
-        let symbols = self.recover_symbols(&self.filtered_freq);
+        let symbols = self.recover_symbols(&self.instant_freq);
 
         Ok(symbols)
     }
     fn compute_instantaneous_frequency(&self, iq: &[Complex32]) -> Vec<f32> {
         let num_samples = iq.len();
-        let mut mixed_signal = Vec::with_capacity(num_samples);
-
-        // Move base band to 0Hz
-        for n in 0..num_samples {
-            let time = n as f32 / self.sample_rate;
-            let mixer = Complex32::from_polar(1.0, -2.0 * std::f32::consts::PI * self.center_frequency * time);
-            mixed_signal.push(iq[n] * mixer);
-        }
-        let mut freq = Vec::with_capacity(mixed_signal.len() - 1);
+        let mut freq = Vec::with_capacity(num_samples - 1);
 
         // Calculate instantaneous frequency and calculate the arithmetic mean.
         let mut mean = 0.0_f64;
-        for window in mixed_signal.windows(2) {
+        for window in iq.windows(2) {
             // Phase difference = angle between consecutive samples
             let phase_diff = (window[1] * window[0].conj()).arg();
 
@@ -75,20 +72,6 @@ impl HC12Decoder {
             *value -= mean as f32;
         }
         freq
-    }
-
-    fn lowpass_filter(&self, freq_samples: &[f32]) -> Vec<f32> {
-        // Simple moving average filter
-        // Cutoff frequency should be around symbol rate
-        let window_size = (self.sample_rate / self.symbol_rate) as usize;
-        let mut filtered = Vec::with_capacity(freq_samples.len());
-
-        for i in window_size..freq_samples.len() {
-            let mean = freq_samples[i-window_size..i].iter().sum::<f32>() / window_size as f32;
-            filtered.push(mean);
-        }
-
-        filtered
     }
 
     fn recover_symbols(&self, filtered_freq: &[f32]) -> Vec<f32> {
@@ -112,6 +95,70 @@ impl HC12Decoder {
                 acc | (if b { 1 << (7-i) } else { 0 })
             })
         }).collect()
+    }
+}
+
+pub struct LowPassFilter {
+    pub sample_rate: f32,
+    pub cutoff_hz: f32,
+    pub num_taps: usize, // filter kernel length (odd recommended)
+}
+
+impl LowPassFilter {
+    /// Applies a Hamming-windowed sinc low-pass filter to IQ samples.
+    /// Input  : time-domain IQ samples (Complex32: real=I, imag=Q)
+    /// Output : filtered IQ samples, same length as input
+    pub fn lowpass_filter(&self, iq_samples: &[Complex32]) -> Vec<Complex32> {
+        let kernel = self.build_kernel();
+        let half   = kernel.len() / 2;
+        let n      = iq_samples.len();
+
+        (0..n)
+            .map(|i| {
+                kernel.iter().enumerate().fold(
+                    Complex32::new(0.0, 0.0),
+                    |acc, (j, &coeff)| {
+                        // center the kernel tap index
+                        let tap = i + j;
+                        if tap < half || tap - half >= n {
+                            acc // zero-pad out-of-bounds
+                        } else {
+                            acc + iq_samples[tap - half] * coeff
+                        }
+                    },
+                )
+            })
+            .collect()
+    }
+
+    /// Builds the normalized Hamming-windowed sinc kernel (real coefficients).
+    fn build_kernel(&self) -> Vec<f32> {
+        let cutoff_norm = self.cutoff_hz / self.sample_rate; // normalized [0.0, 0.5]
+        let m           = self.num_taps;
+        let half        = (m / 2) as f32;
+
+        let mut h: Vec<f32> = (0..m)
+            .map(|i| {
+                let n = i as f32 - half;
+
+                // Sinc component
+                let sinc = if n == 0.0 {
+                    2.0 * cutoff_norm
+                } else {
+                    (2.0 * PI * cutoff_norm * n).sin() / (PI * n)
+                };
+
+                // Hamming window component
+                let hamming = 0.54 - 0.46 * (2.0 * PI * i as f32 / (m - 1) as f32).cos();
+
+                sinc * hamming
+            })
+            .collect();
+
+        // Normalize → unity DC gain
+        let sum: f32 = h.iter().sum();
+        h.iter_mut().for_each(|v| *v /= sum);
+        h
     }
 }
 

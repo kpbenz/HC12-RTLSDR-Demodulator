@@ -325,6 +325,16 @@ impl eframe::App for HC12App {
                 ui.separator();
 
                 // Spectrum
+                ui.heading("Filtered Energy Spectrum");
+                if !self.decoder.filtered_freq.is_empty() {
+                    self.visualizer.plot_filtered_frequency_spectrum(ui, &self.decoder.filtered_freq);
+                } else {
+                    ui.label("No data");
+                }
+
+                ui.separator();
+
+                // Spectrum
                 ui.heading("Instantaneous Frequency in Time Domain");
                 if !self.decoder.instant_freq.is_empty() {
                     self.visualizer.plot_instantaneous_frequency(ui, &self.decoder.instant_freq);
@@ -344,16 +354,7 @@ impl eframe::App for HC12App {
 
                 ui.separator();
 
-                // Spectrum
-                ui.heading("Filtered Frequency in Time Domain");
-                if !self.decoder.filtered_freq.is_empty() {
-                    self.visualizer.plot_filtered_frequency(ui, &self.decoder.filtered_freq);
-                } else {
-                    ui.label("No data");
-                }
-
-                ui.separator();
-
+                /*
                 // Spectrum
                 ui.heading("Filtered Frequency in Frequency Domain");
                 if !self.decoder.filtered_freq.is_empty() {
@@ -362,7 +363,6 @@ impl eframe::App for HC12App {
                     ui.label("No data");
                 }
 
-                /*
                                 ui.separator();
 
                                 // Decoded symbols

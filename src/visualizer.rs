@@ -171,6 +171,36 @@ impl SignalVisualizer {
             });
     }
 
+    pub fn plot_filtered_frequency_spectrum(&self, ui: &mut egui::Ui, filtered_freq: &Vec<Complex32>) {
+        let step = filtered_freq.len().max(1) / self.history_size.min(filtered_freq.len()).max(1);
+
+        if filtered_freq.len() < 64 {
+            ui.label("Not enough samples for FFT");
+            return;
+        }
+
+        let (freqs, mags) = self.compute_shifted_spectrum(&filtered_freq);
+
+        let fft_points: Vec<[f64; 2]> = freqs.iter().zip(mags.iter())
+            .map(|(&f, &m)| [f as f64, m as f64])
+            .collect();
+
+        Plot::new("filtered_frequency")
+            .width(970.0)
+            .height(250.0)
+            .default_y_bounds(-50.0,60.0)
+            .label_formatter(|_name, value| {
+                format!("Frequency: {:.3}\nMagnitude: {:.3} dB", value.x, value.y)
+            })
+            .show(ui, |plot_ui| {
+                plot_ui.line(
+                    Line::new("Filtered Frequency", fft_points)
+                        .color(egui::Color32::from_rgb(132, 245, 39))
+                        .width(1.0)
+                );
+            });
+    }
+
     pub fn plot_instantaneous_frequency(&self, ui: &mut egui::Ui, inst_freq: &Vec<f32>) {
         let step = inst_freq.len().max(1) / self.history_size.min(inst_freq.len()).max(1);
 
@@ -187,9 +217,9 @@ impl SignalVisualizer {
             })
             .show(ui, |plot_ui| {
                 let inst_freq_points: PlotPoints = inst_freq.iter()
-                    .step_by(step.max(1))
+                    //.step_by(step.max(1))
                     .enumerate()
-                    .take(self.history_size)
+                    //.take(self.history_size)
                     .map(|(i, c)| [i as f64, *c as f64])
                     .collect();
 
@@ -201,35 +231,6 @@ impl SignalVisualizer {
             });
     }
 
-    pub fn plot_filtered_frequency(&self, ui: &mut egui::Ui, filtered_freq: &Vec<f32>) {
-        let step = filtered_freq.len().max(1) / self.history_size.min(filtered_freq.len()).max(1);
-
-        if filtered_freq.len() < 64 {
-            ui.label("Not enough samples for FFT");
-            return;
-        }
-
-        Plot::new("filtered_frequency")
-            .width(970.0)
-            .height(250.0)
-            .label_formatter(|_name, value| {
-                format!("Sample: {:.0}\nMagnitude: {:.3} dB", value.x, value.y)
-            })
-            .show(ui, |plot_ui| {
-                let filtered_freq_points: PlotPoints = filtered_freq.iter()
-                    .step_by(step.max(1))
-                    .enumerate()
-                    .take(self.history_size)
-                    .map(|(i, c)| [i as f64, *c as f64])
-                    .collect();
-
-                plot_ui.line(
-                    Line::new("Filtered Frequency", filtered_freq_points)
-                        .color(egui::Color32::from_rgb(255, 0, 0))
-                        .width(1.0)
-                );
-            });
-    }
     pub fn plot_symbols(&self, ui: &mut egui::Ui, symbols: &[u16]) {
             if symbols.is_empty() {
                 return;

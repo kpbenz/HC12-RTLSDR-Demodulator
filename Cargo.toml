@@ -2,7 +2,7 @@
 name = "HC12-RTLSDR-Demodulator"
 version = "0.1.0"
 edition = "2021"
-authors = ["Karsten"]
+authors = ["Karsten Benz"]
 description = "HC12 Demodulator using a RTLSDR dongle."
 
 [dependencies]
